@@ -91,6 +91,5 @@ tags
 site-packages
 db.sqlite3
 /data/
-/static/
 /run/
 /staticfiles/
