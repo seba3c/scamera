@@ -1,0 +1,17 @@
+#!/bin/bash
+
+CWD=$(pwd)
+DJANGODIR=$CWD
+DJANGO_SETTINGS_MODULE=settings.dev_settings    # which settings file should Django use
+VENV=~/.virtualenvs/camera/bin/
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment
+source ${VENV}activate
+
+# cd $DJANGODIR
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DJANGODIR:$CWD:$PYTHONPATH
+
+exec python manage.py runftpdserver

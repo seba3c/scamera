@@ -1,0 +1,28 @@
+[  
+   {  
+      "model":"ftpd.ftpuser",
+      "pk":1,
+      "fields":{  
+         "user":2,
+         "active":true,
+         "change_directory":true,
+         "list_files":true,
+         "retrieve_file":true,
+         "append_data":true,
+         "delete":true,
+         "rename":true,
+         "create_dir":true,
+         "store":true,
+         "change_mode_perm":true
+      }
+   },
+   {  
+      "model":"ftpd.ftpdserverconfig",
+      "pk":1,
+      "fields":{  
+         "telegram_notification_handlers":[  
+            
+         ]
+      }
+   }
+]

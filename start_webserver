@@ -1,0 +1,23 @@
+#!/bin/bash
+
+CWD=$(pwd)										# current directory
+DJANGODIR=$CWD							        # Django project directory
+DJANGO_SETTINGS_MODULE=settings.dev_settings    # which settings file should Django use
+
+VENV=~/.virtualenvs/camera/bin/
+
+SERVER_IP=0.0.0.0
+SERVER_PORT=8000
+
+echo "Starting $NAME as `whoami`"
+
+# Activate the virtual environment
+echo "Activating virtual env..."
+source ${VENV}activate
+ 
+# cd $DJANGODIR
+export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+export PYTHONPATH=$DJANGODIR:$CWD:$PYTHONPATH
+
+# Start Django run server
+exec django-admin runserver $SERVER_IP:$SERVER_PORT --noreload --nothreading

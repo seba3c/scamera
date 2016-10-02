@@ -1,0 +1,31 @@
+[
+   {
+      "model":"notifications.notificationuserprofile",
+      "pk":1,
+      "fields":{
+         "user":3,
+         "pin":"1234",
+         "telegram_username":"tel_user_app_user_1",
+         "telegram_bot_id":"tchat_id"
+      }
+   },
+   {
+      "model":"notifications.telegrambot",
+      "pk":"scamera_bot",
+      "fields":{
+         "token":"telegram_api_bot_token"
+      }
+   },
+   {
+      "model":"notifications.telegramnotificationhandler",
+      "pk":2,
+      "fields":{
+         "name":"scamera_bot NH",
+         "enabled":true,
+         "telegram_bot":"scamera_bot",
+         "subscribers":[
+
+         ]
+      }
+   }
+]
