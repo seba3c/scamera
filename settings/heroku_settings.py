@@ -42,7 +42,7 @@ FTPD_PORT = 2121
 LOGGING_DEFAULT_LEVEL = 'DEBUG'
 LOGGING_CONSOLE_HANDLER = 'console'
 LOGGING_FILE_HANDLER = 'file_default'
-LOGGING_DEFAULT_HANDLERS = [LOGGING_CONSOLE_HANDLER]
+LOGGING_DEFAULT_HANDLERS = [LOGGING_CONSOLE_HANDLER, LOGGING_FILE_HANDLER]
 
 # Logging config
 LOGGING = {
@@ -67,6 +67,13 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'verbose',
             'filters': ['require_debug_true'],
+        },
+        LOGGING_FILE_HANDLER: {
+            'level': LOGGING_DEFAULT_LEVEL,
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(PROJECT_ROOT, 'logs', 'tero.log'),
+            'formatter': 'verbose',
+            'filters': [],
         },
     },
     'loggers': {

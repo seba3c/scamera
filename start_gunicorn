@@ -1,27 +1,15 @@
 #!/bin/bash
 
+source config_enviroment
+
 NAME="tero_app"                                 # Name of the application
-CWD=$(pwd)										# current directory
-DJANGODIR=$CWD							        # Django project directory
+
 SOCKFILE=$CWD/run/gunicorn.sock  				# we will communicate using this unix socket
 NUM_WORKERS=1                                   # how many worker processes should Gunicorn spawn
-DJANGO_SETTINGS_MODULE=settings.dev_settings    # which settings file should Django use
 DJANGO_WSGI_MODULE=wsgi                   		# WSGI module name
-
-VENV=~/.virtualenvs/camera/bin/
 
 SERVER_IP=0.0.0.0
 SERVER_PORT=8000
-
-echo "Starting $NAME as `whoami`"
-
-# Activate the virtual environment
-echo "Activating virtual env..."
-source ${VENV}activate
- 
-# cd $DJANGODIR
-export DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
-export PYTHONPATH=$DJANGODIR:$CWD:$PYTHONPATH
 
 # Create the run directory if it doesn't exist
 RUNDIR=$(dirname $SOCKFILE)

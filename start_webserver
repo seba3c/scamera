@@ -2,7 +2,7 @@
 
 CWD=$(pwd)										# current directory
 DJANGODIR=$CWD							        # Django project directory
-DJANGO_SETTINGS_MODULE=settings.dev_settings    # which settings file should Django use
+DJANGO_SETTINGS_MODULE=settings.heroku_settings    # which settings file should Django use
 
 VENV=~/.virtualenvs/camera/bin/
 
