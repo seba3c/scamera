@@ -3,7 +3,7 @@
 CWD=$(pwd)
 DJANGODIR=$CWD
 DJANGO_SETTINGS_MODULE=settings.heroku_settings    # which settings file should Django use
-VENV=~/.virtualenvs/camera/bin/
+VENV=~/dev/tools/virtualenvs/scamera/bin/
 
 echo "Starting $NAME as `whoami`"
 
