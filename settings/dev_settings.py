@@ -71,7 +71,7 @@ LOGGING = {
         LOGGING_FILE_HANDLER: {
             'level': LOGGING_DEFAULT_LEVEL,
             'class': 'logging.FileHandler',
-            'filename': os.path.join(PROJECT_ROOT, 'logs', 'tero.log'),
+            'filename': os.path.join(PROJECT_ROOT, 'logs', 'scamera.log'),
             'formatter': 'verbose',
             'filters': [],
         },
