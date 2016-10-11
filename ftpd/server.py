@@ -1,6 +1,5 @@
 import os
 import logging
-import time
 
 from pyftpdlib.handlers import FTPHandler
 from pyftpdlib.servers import FTPServer, ThreadedFTPServer, MultiprocessFTPServer
@@ -24,6 +23,11 @@ class FTPDjangoUserAuthorizer(DummyAuthorizer):
         super(FTPDjangoUserAuthorizer, self).__init__()
 
     def validate_authentication(self, username, password, handler):
+        ftpd_config = FTPDServerConfig.objects.get()
+        if not ftpd_config.enabled:
+            logger.debug("FTPD server disabled! Rejecting new connections")
+            raise AuthenticationFailed("FTP is disabled. New connection will be refused!")
+
         logger.info("Authenticating user %s...", username)
         user = authenticate(username=username, password=password)
         msg = "Authentication failed."

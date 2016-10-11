@@ -4,7 +4,6 @@
       "pk":1,
       "fields":{  
          "user":2,
-         "active":true,
          "change_directory":true,
          "list_files":true,
          "retrieve_file":true,

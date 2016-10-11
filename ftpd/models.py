@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 class FTPUser(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    active = models.BooleanField(default=True)
 
     # FTPD permissions
     change_directory = models.BooleanField(help_text="e = change directory (CWD, CDUP commands)",
@@ -66,6 +65,8 @@ class FTPUser(models.Model):
 class FTPDServerConfig(SingletonModel):
 
     telegram_notification_handlers = models.ManyToManyField(TelegramNotificationHandler)
+    enabled = models.BooleanField(default=True,
+                                  help_text="Start/Stop accepting new FTP connections")
 
     def get_notification_handlers(self, only_enabled=False):
         handlers = []
@@ -81,4 +82,5 @@ class FTPDServerConfig(SingletonModel):
         return count
 
     def __str__(self):
-        return "FTPD Server Config - Notification Handlers: %d" % self.get_notification_handlers_count()
+        return "Notification Handlers: %d - Enabled: %s" % (self.get_notification_handlers_count(),
+                                                            self.enabled)

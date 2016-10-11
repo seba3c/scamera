@@ -7,18 +7,14 @@ from ftpd.models import FTPUser, FTPDServerConfig
 
 class FTPUserAdmin(admin.ModelAdmin):
 
-    list_display = ('username', 'useremail', 'ftpd_perm', 'active')
+    list_display = ('username', 'useremail', 'ftpd_perm')
     list_display_links = ('username', 'useremail')
-
-    list_filter = (
-        ('active', admin.BooleanFieldListFilter),
-    )
 
     search_fields = ['user__email', 'user__username']
 
     fieldsets = (
         (None, {
-            'fields': ('user', 'active')
+            'fields': ('user',)
         }),
         ('FTP Permissions', {
             'classes': ('collapse',),
