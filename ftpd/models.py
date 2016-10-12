@@ -4,17 +4,12 @@ from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 
-from solo.models import SingletonModel
-
-from notifications.telegram.models import TelegramNotificationHandler
-
-
 logger = logging.getLogger(__name__)
 
 
 class FTPUser(models.Model):
 
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, models.PROTECT)
 
     # FTPD permissions
     change_directory = models.BooleanField(help_text="e = change directory (CWD, CDUP commands)",
@@ -58,29 +53,20 @@ class FTPUser(models.Model):
         perm = map(lambda x: x[1], filter(lambda x: True if x[0] else False, l))
         return ''.join(perm)
 
-    def __str__(self):
-        return "{} - {}".format(self.user, self.ftpd_perm)
-
-
-class FTPDServerConfig(SingletonModel):
-
-    telegram_notification_handlers = models.ManyToManyField(TelegramNotificationHandler)
-    enabled = models.BooleanField(default=True,
-                                  help_text="Start/Stop accepting new FTP connections")
-
-    def get_notification_handlers(self, only_enabled=False):
+    def get_notification_handlers(self, active=False):
         handlers = []
-        if only_enabled:
-            handlers.extend(self.telegram_notification_handlers.filter(enabled=True))
+        if active:
+            handlers.extend(self.telegramnotificationhandler_set.filter(active=True))
         return handlers
 
-    def get_enabled_notification_handlers(self):
-        return self.get_notification_handlers(only_enabled=True)
+    def get_active_notification_handlers(self):
+        return self.get_notification_handlers(active=True)
 
     def get_notification_handlers_count(self):
-        count = self.telegram_notification_handlers.count()
+        count = self.telegramnotificationhandler_set.count()
         return count
 
     def __str__(self):
-        return "Notification Handlers: %d - Enabled: %s" % (self.get_notification_handlers_count(),
-                                                            self.enabled)
+        return "%s - %s (Notification Handlers: %d)" % (self.user,
+                                                        self.ftpd_perm,
+                                                        self.get_notification_handlers_count())

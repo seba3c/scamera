@@ -5,6 +5,7 @@ from django.db import models
 from telegram.error import TelegramError
 
 from notifications.models import NotificationHandler
+from django.core.exceptions import PermissionDenied
 
 
 logger = logging.getLogger(__name__)
@@ -13,7 +14,8 @@ logger = logging.getLogger(__name__)
 class TelegramBot(models.Model):
 
     name = models.CharField(max_length=20, null=False, primary_key=True)
-    token = models.CharField(max_length=100, null=False, unique=True)
+    # allows more than one telegram bot implementation with the same token
+    token = models.CharField(max_length=100, null=False)
 
     def __str__(self):
         return "@%s" % self.name
@@ -26,6 +28,22 @@ class TelegramBot(models.Model):
 
     def unsubscribe(self, nup):
         self.telegramnotificationhandler.unsubscribe(nup)
+
+    def toggle_activate(self, nup, value):
+        if not nup.user.is_superuser:
+            raise PermissionDenied()
+        ftp_user = self.telegramnotificationhandler.ftp_user
+        logger.debug("Changing is_active = %s... %s", value, ftp_user.user)
+        ftp_user.user.is_active = value
+        logger.debug("Saving associated user...")
+        ftp_user.user.save()
+        logger.debug("User saved!")
+
+    def activate(self, nup):
+        self.toggle_activate(nup, True)
+
+    def deactivate(self, nup):
+        self.toggle_activate(nup, False)
 
 
 class TelegramNotificationHandler(NotificationHandler):

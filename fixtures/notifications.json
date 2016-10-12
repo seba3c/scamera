@@ -18,10 +18,11 @@
    },
    {
       "model":"notifications.telegramnotificationhandler",
-      "pk":2,
+      "pk":1,
       "fields":{
-         "name":"scamera_bot NH",
-         "enabled":true,
+      	 "ftp_user": 1,
+         "name":"scamera_bot NH",       
+         "active":true,
          "telegram_bot":"scamera_bot",
          "subscribers":[
 

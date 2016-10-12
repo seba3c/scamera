@@ -14,14 +14,5 @@
          "store":true,
          "change_mode_perm":true
       }
-   },
-   {  
-      "model":"ftpd.ftpdserverconfig",
-      "pk":1,
-      "fields":{  
-         "telegram_notification_handlers":[  
-            
-         ]
-      }
    }
 ]

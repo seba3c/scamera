@@ -1,8 +1,7 @@
 from django.contrib import admin
 
-from solo.admin import SingletonModelAdmin
 
-from ftpd.models import FTPUser, FTPDServerConfig
+from ftpd.models import FTPUser
 
 
 class FTPUserAdmin(admin.ModelAdmin):
@@ -36,9 +35,8 @@ class FTPUserAdmin(admin.ModelAdmin):
     ftpd_perm.short_description = 'FTP Permissions'
 
     def get_readonly_fields(self, request, obj=None):
-        if obj: # editing an existing object
+        if obj:  # editing an existing object
             return self.readonly_fields + ('user',)
         return self.readonly_fields
 
 admin.site.register(FTPUser, FTPUserAdmin)
-admin.site.register(FTPDServerConfig, SingletonModelAdmin)

@@ -2,6 +2,7 @@ import logging
 
 from django.db import models
 from django.contrib.auth.models import User
+from ftpd.models import FTPUser
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +22,8 @@ class NotificationUserProfile(models.Model):
 class NotificationHandler(models.Model):
 
     name = models.CharField(max_length=25, unique=True, null=False, blank=False)
-    enabled = models.BooleanField(default=True)
+    ftp_user = models.ForeignKey(FTPUser)
+    active = models.BooleanField(default=True)
     subscribers = models.ManyToManyField(NotificationUserProfile, blank=True)
 
     def new_notification(self, kwargs=None):
@@ -43,5 +45,3 @@ class NotificationHandler(models.Model):
 
     class Meta:
         abstract = True
-
-

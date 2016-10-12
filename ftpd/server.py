@@ -7,7 +7,7 @@ from pyftpdlib.authorizers import DummyAuthorizer, AuthenticationFailed
 
 from django.contrib.auth import authenticate
 
-from ftpd.models import FTPUser, FTPDServerConfig
+from ftpd.models import FTPUser
 
 
 logger = logging.getLogger("ftpd")
@@ -23,11 +23,6 @@ class FTPDjangoUserAuthorizer(DummyAuthorizer):
         super(FTPDjangoUserAuthorizer, self).__init__()
 
     def validate_authentication(self, username, password, handler):
-        ftpd_config = FTPDServerConfig.objects.get()
-        if not ftpd_config.enabled:
-            logger.debug("FTPD server disabled! Rejecting new connections")
-            raise AuthenticationFailed("FTP is disabled. New connection will be refused!")
-
         logger.info("Authenticating user %s...", username)
         user = authenticate(username=username, password=password)
         msg = "Authentication failed."
@@ -54,7 +49,6 @@ class NotificationFTPHandler(FTPHandler):
     def __init__(self, conn, server, ioloop=None):
         logger.debug("Initializing FTP Notification handler...")
         super(NotificationFTPHandler, self).__init__(conn, server, ioloop)
-        self.ftpd_config = FTPDServerConfig.objects.get()
 
     def on_connect(self):
         logger.debug("%s:%s connected", self.remote_ip, self.remote_port)
@@ -78,7 +72,8 @@ class NotificationFTPHandler(FTPHandler):
 
     def _send_notifications(self, file):
         logger.info("Firing notification...")
-        handlers = self.ftpd_config.get_enabled_notification_handlers()
+        ftp_user = FTPUser.objects.get(user__username=self.username)
+        handlers = ftp_user.get_active_notification_handlers()
         data = open(file, 'rb')
         kwarg = {'file': data}
         # TODO: send in a thread or task
