@@ -21,6 +21,7 @@ class SCameraBotTelgramHandlers():
     """
     Commands - /setcommands BotFather message
     ping - check availability
+    status - current notification status
     register - start to receive notifications
     subscribe - subscription on
     unsubscribe - subscription off
@@ -70,6 +71,27 @@ class SCameraBotTelgramHandlers():
         except UnregisterdNotificationUserProfile:
             self._handle_user_unregistered(bot, update)
         logger.info("Ping OK!")
+
+    def status(self, bot, update):
+        logger.info("Checking status...")
+        try:
+            nup = self._check_user_registered(update)
+            chat_id = update.message.chat_id
+            username = update.message.chat.username
+            logger.info("Checking subscription...")
+            subscribed = 'on' if self.telegrambot.is_subscribed(nup) else 'off'
+            logger.info("Checking activation...")
+            active = 'on' if self.telegrambot.is_active() else 'off'
+            msg = "username: %s\n" % username
+            msg += "id: %s\n" % chat_id
+            msg += "bot notifications: %s\n" % active
+            msg += "user subscription: %s" % subscribed
+            self._send_message(bot, update, msg)
+        except UnregisterdNotificationUserProfile:
+            self._handle_user_unregistered(bot, update)
+        except:
+            logger.exception()
+        logger.info("Status check OK!")
 
     def subscribe(self, bot, update):
         logger.info("Enabling subscription...")
@@ -133,6 +155,7 @@ class SCameraBotTelgramHandlers():
         logger.debug("Building telegram bot updater...")
         updater = Updater(self.telegrambot.token)
         updater.dispatcher.add_handler(CommandHandler('ping', self.ping))
+        updater.dispatcher.add_handler(CommandHandler('status', self.status))
         updater.dispatcher.add_handler(CommandHandler('subscribe', self.subscribe))
         updater.dispatcher.add_handler(CommandHandler('unsubscribe', self.unsubscribe))
         updater.dispatcher.add_handler(CommandHandler('register', self.register))

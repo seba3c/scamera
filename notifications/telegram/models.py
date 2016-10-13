@@ -29,6 +29,12 @@ class TelegramBot(models.Model):
     def unsubscribe(self, nup):
         self.telegramnotificationhandler.unsubscribe(nup)
 
+    def is_active(self):
+        return self.telegramnotificationhandler.ftp_user.user.is_active
+
+    def is_subscribed(self, nup):
+        return self.telegramnotificationhandler.subscribers.filter(id=nup.id).exists()
+
     def toggle_activate(self, nup, value):
         if not nup.user.is_superuser:
             raise PermissionDenied()
