@@ -13,9 +13,11 @@ logger = logging.getLogger(__name__)
 
 class TelegramBot(models.Model):
 
-    name = models.CharField(max_length=20, null=False, primary_key=True)
+    name = models.CharField(max_length=25, null=False, primary_key=True)
     # allows more than one telegram bot implementation with the same token
     token = models.CharField(max_length=100, null=False)
+
+    module_name = models.CharField(max_length=25, null=True)
 
     def __str__(self):
         return "@%s" % self.name
@@ -79,7 +81,7 @@ class TelegramNotificationHandler(NotificationHandler):
 
     def __str__(self):
         return "%s [%s] | subscribers: %d" % (self.name, self.telegram_bot,
-                                              self.subscribers.all().count())
+                                              self.subscribers.count())
 
     def _get_telegram_bot(self):
         return self.telegram_bot._get_telegram_bot()

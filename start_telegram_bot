@@ -2,6 +2,6 @@
 
 source config_enviroment
 
-BOTNAME=scamera_bot
+BOTNAME=scamera_bot_demo
 
 exec python manage.py runtelegrambot -b $BOTNAME 

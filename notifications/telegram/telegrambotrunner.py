@@ -16,7 +16,7 @@ class TelegramBotRunner():
             telegram_bot = TelegramBot.objects.get(name=botname)
 
             logger.debug("Loading telegram bot module...")
-            telegram_bot_module_name = 'notifications.telegram.%s' % botname
+            telegram_bot_module_name = 'notifications.telegram.%s' % telegram_bot.module_name
             telegram_bot_module = importlib.import_module(telegram_bot_module_name)
             updater = telegram_bot_module.get_telegram_updater(telegram_bot)
             logger.debug("Running telegram bot...")
