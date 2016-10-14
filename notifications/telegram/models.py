@@ -15,7 +15,7 @@ class TelegramBot(models.Model):
 
     name = models.CharField(max_length=25, null=False, primary_key=True)
     # allows more than one telegram bot implementation with the same token
-    token = models.CharField(max_length=100, null=False)
+    token = models.CharField(max_length=100, null=False, unique=True)
 
     module_name = models.CharField(max_length=25, null=True)
 
