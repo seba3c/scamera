@@ -35,7 +35,8 @@ class RGBValue(dbsettings.MultiSeparatorValue):
 
     def to_python(self, value):
         val = dbsettings.MultiSeparatorValue.to_python(self, value)
-        # TODO: check value len, slice 0..2
+        val = [0, 0, 0] if val is None else val + [0, 0, 0]
+        val = val[:3]
         return (int(val[0]), int(val[1]), int(val[2]))
 
 
@@ -54,5 +55,5 @@ class PeopleDetectorAlgorithmSettingGroup(dbsettings.Group):
                                separator=',')
 
 
-people_detector_algorithm = PeopleDetectorAlgorithmSettingGroup('People Detector Algorithm')
-hog_people_detector = HOGPeopleDetectorSettingGroup('HOG People Detector')
+images_settings = PeopleDetectorAlgorithmSettingGroup('People Detector Algorithm')
+images_settings += HOGPeopleDetectorSettingGroup('HOG People Detector')
