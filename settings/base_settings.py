@@ -24,7 +24,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'ftpd',
     'notifications',
-    'image_analysis'
+    'images'
 ]
 
 INSTALLED_APPS += [
