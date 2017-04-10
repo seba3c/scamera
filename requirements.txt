@@ -12,3 +12,4 @@ numpy==1.12.0
 pygame==1.9.2
 PyOpenGL==3.1.0
 django-dbsettings==0.10.0
+imutils==0.3.10

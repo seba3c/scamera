@@ -58,8 +58,10 @@ class TelegramNotificationHandler(NotificationHandler):
 
     telegram_bot = models.OneToOneField(TelegramBot, on_delete=models.CASCADE)
 
-    def _handle_new_notification(self, file=None):
+    def _handle_new_notification(self, path=None):
         logger.debug("New notification received, sending data to telegram subscribers...")
+
+        file = open(path,'rb')
 
         tbot = self._get_telegram_bot()
         msg = "Motion detected!"

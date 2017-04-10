@@ -28,7 +28,8 @@ class HOGPeopleDetectorSettingGroup(dbsettings.Group):
                                                           default=0.65)
 
 
-PEOPLE_DETECTOR_IMPL_CHOICES = [('hog', 'Histogram of Oriented Gradients')]
+PEOPLE_DETECTOR_IMPL_CHOICES = [(None, '-'),
+                                ('hog', 'Histogram of Oriented Gradients')]
 
 
 class RGBValue(dbsettings.MultiSeparatorValue):
@@ -43,7 +44,7 @@ class RGBValue(dbsettings.MultiSeparatorValue):
 class PeopleDetectorAlgorithmSettingGroup(dbsettings.Group):
 
     implementation = dbsettings.StringValue(description='People image tracking algorithm implementation',
-                                            required=True,
+                                            required=False,
                                             default='hog',
                                             choices=PEOPLE_DETECTOR_IMPL_CHOICES)
 
@@ -53,6 +54,10 @@ class PeopleDetectorAlgorithmSettingGroup(dbsettings.Group):
     rect_line_color = RGBValue(description='People tracking rectangle color (RGB)',
                                required=True, default=['0', '0', '255'],
                                separator=',')
+
+    image_output_path = dbsettings.StringValue(help_text='Output path for image enhanced with people tracking data',
+                                               required=True,
+                                               default='/tmp/scamera/people_tracking/')
 
 
 images_settings = PeopleDetectorAlgorithmSettingGroup('People Detector Algorithm')
