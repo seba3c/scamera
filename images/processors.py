@@ -15,6 +15,13 @@ from images.app_settings import images_settings as imsettings
 logger = logging.getLogger(__name__)
 
 
+class ImagePreProcessorResult():
+
+    def __init__(self, path, count=0):
+        self.path = path
+        self.count = count
+
+
 class ImagePreProcessor(object):
 
     def process(self, path):
@@ -24,7 +31,7 @@ class ImagePreProcessor(object):
 class NullImagePreProcessor(ImagePreProcessor):
 
     def process(self, path):
-        return path
+        return ImagePreProcessorResult(path)
 
 
 class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
@@ -67,7 +74,8 @@ class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
         rects = np.array([[x, y, x + w, y + h] for (x, y, w, h) in rects])
         pick = non_max_suppression(rects, probs=None, overlapThresh=self.overlapThresh)
 
-        if len(pick) > 0:
+        object_detected_count = len(pick)
+        if object_detected_count > 0:
             # draw the final bounding boxes
             for (xA, yA, xB, yB) in pick:
                 cv2.rectangle(image, (xA, yA), (xB, yB),
@@ -78,7 +86,7 @@ class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
             new_path = os.path.join(self.ouput_path, filename)
             cv2.imwrite(new_path, image)
 
-        return new_path
+        return ImagePreProcessorResult(new_path, object_detected_count)
 
 
 class ImagePreProcessorFactory(object):

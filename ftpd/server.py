@@ -67,19 +67,19 @@ class NotificationFTPHandler(FTPHandler):
 
     def on_file_received(self, file):
         logger.info("File received %s", file)
-        new_file = self._pre_process(file)
-        self._send_notifications(new_file)
+        result = self._pre_process(file)
+        self._send_notifications(result)
 
     def on_incomplete_file_received(self, file):
         logger.info("Incomplete file received %s", file)
-        new_file = self._pre_process(file)
-        self._send_notifications(new_file)
+        result = self._pre_process(file)
+        self._send_notifications(result)
 
-    def _send_notifications(self, file):
+    def _send_notifications(self, result):
         logger.info("Firing notification...")
         ftp_user = self.get_ftp_user()
         handlers = ftp_user.get_active_notification_handlers()
-        kwarg = {'path': file}
+        kwarg = {'path': result.path, 'object_count': result.count}
         # TODO: send in a thread or task
         for hdl in handlers:
             hdl.new_notification(kwarg)
@@ -87,8 +87,8 @@ class NotificationFTPHandler(FTPHandler):
     def _pre_process(self, file):
         ftp_user = self.get_ftp_user()
         image_preprocessor = ftp_user.get_image_preprocessor()
-        new_file = image_preprocessor.process(file)
-        return new_file
+        result = image_preprocessor.process(file)
+        return result
 
 
 class NotificationFTPServer():

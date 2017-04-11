@@ -58,19 +58,18 @@ class TelegramNotificationHandler(NotificationHandler):
 
     telegram_bot = models.OneToOneField(TelegramBot, on_delete=models.CASCADE)
 
-    def _handle_new_notification(self, path=None):
+    def _handle_new_notification(self, path=None, object_count=0):
         logger.debug("New notification received, sending data to telegram subscribers...")
 
         file = open(path,'rb')
 
         tbot = self._get_telegram_bot()
-        msg = "Motion detected!"
         file_id = None
         for s in self.subscribers.all():
             logger.info("Sending notification to %s", s)
             try:
                 logger.debug("Sending telegram message...")
-                tbot.sendMessage(chat_id=s.telegram_bot_id, text=msg)
+                self._send_message(tbot, s.telegram_bot_id, object_count)
                 if file_id:
                     logger.debug("Sending telegram photo (existing server photo)...")
                     tbot.sendPhoto(chat_id=s.telegram_bot_id, photo=file_id)
@@ -80,6 +79,18 @@ class TelegramNotificationHandler(NotificationHandler):
                     file_id = tmsg.photo[0].file_id
             except TelegramError:
                 logger.error("Message could not be sent to chat id: %s", s.telegram_bot_id)
+
+    def _send_message(self, tbot, chat_id, object_count=0):
+        parse_mode = telegram.ParseMode.HTML
+        template = "<b style='color:{color}'>{msg}</b>"
+        if object_count > 0:
+            i = 3
+            msg = template.format(color='red', msg='ALERT: Motion Detected!')
+        else:
+            i = 1
+            msg = template.format(color='yellow', msg='WARNING: Motion Detected!')
+        for _ in range(i):
+            tbot.sendMessage(chat_id=chat_id, text=msg, parse_mode=parse_mode)
 
     def __str__(self):
         return "%s [%s] | subscribers: %d" % (self.name, self.telegram_bot,
