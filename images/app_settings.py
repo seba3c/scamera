@@ -55,6 +55,9 @@ class PeopleDetectorAlgorithmSettingGroup(dbsettings.Group):
                                required=True, default=['0', '0', '255'],
                                separator=',')
 
+    output_enhanced_image = dbsettings.BooleanValue(description='Save image enhanced with people tracking data',
+                                                    required=True, default=True)
+
     image_output_path = dbsettings.StringValue(help_text='Output path for image enhanced with people tracking data',
                                                required=True,
                                                default='/tmp/scamera/people_tracking/')

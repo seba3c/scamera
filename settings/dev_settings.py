@@ -97,5 +97,10 @@ LOGGING = {
             'level': LOGGING_DEFAULT_LEVEL,
             'propagate': False,
         },
+        'images': {
+            'handlers': LOGGING_DEFAULT_HANDLERS,
+            'level': LOGGING_DEFAULT_LEVEL,
+            'propagate': False,
+        },
     }
 }

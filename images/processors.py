@@ -2,7 +2,6 @@ import logging
 import os
 
 import cv2
-from cv2 import IMREAD_GRAYSCALE
 
 import numpy as np
 
@@ -24,6 +23,13 @@ class ImagePreProcessorResult():
 
 class ImagePreProcessor(object):
 
+    def __init__(self, save_enhaced_imgs=None, ouput_path=None):
+        self.save_enhaced_imgs = save_enhaced_imgs or imsettings.output_enhanced_image
+        self.ouput_path = ouput_path or imsettings.image_output_path
+        if not os.path.exists(self.ouput_path):
+            logger.debug("Creating path '%s'...", self.ouput_path)
+            os.makedirs(self.ouput_path, exist_ok=True)
+
     def process(self, path):
         raise NotImplementedError('Subclasses must implement this method!')
 
@@ -36,7 +42,10 @@ class NullImagePreProcessor(ImagePreProcessor):
 
 class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
 
-    def __init__(self):
+    def __init__(self, save_enhaced_imgs=None, ouput_path=None):
+
+        super(HOGPeopleDetectorImagePreProcessor, self).__init__(save_enhaced_imgs,
+                                                                 ouput_path)
         # initialize the HOG descriptor/person detector
         self.hog = cv2.HOGDescriptor()
         self.hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
@@ -50,11 +59,6 @@ class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
         self.rect_line_width = imsettings.rect_line_width
 
         self.overlapThresh = imsettings.non_maxima_suppression_thresh
-
-        self.ouput_path = imsettings.image_output_path
-        if not os.path.exists(self.ouput_path):
-            logger.debug("Creating path '%s'...", self.ouput_path)
-            os.makedirs(self.ouput_path, exist_ok=True)
 
     def process(self, path):
         logger.info("Analyzing image: '%s'", path)
@@ -92,8 +96,8 @@ class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
 class ImagePreProcessorFactory(object):
 
     @staticmethod
-    def get_image_preprocessor():
+    def get_image_preprocessor(save_enhaced_imgs=None, ouput_path=None):
         impl = imsettings.implementation
         if impl == 'hog':
-            return HOGPeopleDetectorImagePreProcessor()
+            return HOGPeopleDetectorImagePreProcessor(save_enhaced_imgs, ouput_path)
         return NullImagePreProcessor()
