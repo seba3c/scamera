@@ -1,5 +1,6 @@
 import logging
 import os
+import timeit
 
 import cv2
 
@@ -16,9 +17,10 @@ logger = logging.getLogger(__name__)
 
 class ImagePreProcessorResult():
 
-    def __init__(self, path, count=0):
+    def __init__(self, path, count=0, time=0):
         self.path = path
         self.count = count
+        self.time = time
 
 
 class ImagePreProcessor(object):
@@ -66,6 +68,7 @@ class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
         image = cv2.imread(path)  # IMREAD_GRAYSCALE
         image = imutils.resize(image, width=min(self.max_width_size, image.shape[1]))
 
+        start_time = timeit.default_timer()
         # detect people in the image
         (rects, weights) = self.hog.detectMultiScale(image,
                                                      winStride=self.winStride,
@@ -77,8 +80,9 @@ class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
         # boxes that are still people
         rects = np.array([[x, y, x + w, y + h] for (x, y, w, h) in rects])
         pick = non_max_suppression(rects, probs=None, overlapThresh=self.overlapThresh)
-
         object_detected_count = len(pick)
+        elapsed_time = timeit.default_timer() - start_time
+
         if object_detected_count > 0:
             # draw the final bounding boxes
             for (xA, yA, xB, yB) in pick:
@@ -90,7 +94,7 @@ class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
             new_path = os.path.join(self.ouput_path, filename)
             cv2.imwrite(new_path, image)
 
-        return ImagePreProcessorResult(new_path, object_detected_count)
+        return ImagePreProcessorResult(new_path, object_detected_count, elapsed_time)
 
 
 class ImagePreProcessorFactory(object):

@@ -26,6 +26,7 @@ class PeopleDetectorTest(models.Model):
                      ('finished', 'finished'),
                      ('failed', 'failed'))
 
+    title = models.CharField(max_length=50, default='Test', null=False, blank=False)
     state = models.CharField(choices=state_choices, max_length=10, default='initial',
                              null=False,
                              blank=False)
@@ -33,16 +34,20 @@ class PeopleDetectorTest(models.Model):
                                 null=False,
                                 blank=False)
 
-    creation_timestamp = models.DateTimeField(auto_now_add=True, null=False, blank=False)
-    running_timestamp = models.DateTimeField(null=True, blank=False)
-    duration = models.DurationField(null=True, blank=True)
+    creation_timestamp = models.DateTimeField("Created",
+                                              auto_now_add=True, null=False, blank=False)
+    running_timestamp = models.DateTimeField("Executed",
+                                             null=True, blank=False)
+    time_took = models.FloatField(default=0.0, null=False, blank=True)
 
     positive_samples_dir = models.CharField(max_length=150, null=False, blank=False)
     negative_samples_dir = models.CharField(max_length=150, null=False, blank=False)
     save_enhaced_images = models.BooleanField(default=False, null=False, blank=False)
 
-    positive_samples_count = models.PositiveIntegerField(null=False, blank=False, default=0)
-    negative_samples_count = models.PositiveIntegerField(null=False, blank=False, default=0)
+    positive_samples_count = models.PositiveIntegerField("Positive Samples",
+                                                         null=False, blank=False, default=0)
+    negative_samples_count = models.PositiveIntegerField("Negative Samples",
+                                                         null=False, blank=False, default=0)
 
     true_positives = models.PositiveIntegerField("TP", null=False, blank=False, default=0)
     true_negatives = models.PositiveIntegerField("TN", null=False, blank=False, default=0)
@@ -65,6 +70,7 @@ class PeopleDetectorTest(models.Model):
                 self.true_positives += 1
             else:
                 self.false_positives += 1
+            self.time_took += result.time
 
         for im_path in paths.list_images(self.negative_samples_dir):
             self.negative_samples_count += 1
@@ -73,9 +79,9 @@ class PeopleDetectorTest(models.Model):
                 self.true_negatives += 1
             else:
                 self.false_negatives += 1
+            self.time_took += result.time
 
         self.state = 'finished'
-        self.duration = self.running_timestamp - timezone.now()
         self.save()
 
     def fail(self):
