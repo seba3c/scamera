@@ -6,21 +6,27 @@ from images.models import PeopleDetectorTest
 class PeopleDetectorTestAdmin(admin.ModelAdmin):
 
     list_display = ('id', 'title', 'state',
-                    'creation_timestamp',
+                    # 'creation_timestamp',
                     'running_timestamp',
                     'time_took_f',
+                    'accuracy_f',
+                    'avg_time_per_sample',
                     'positive_samples_count',
                     'negative_samples_count',
+                    'total_samples_count',
                     'true_positives',
                     'false_positives',
                     'true_negatives',
                     'false_negatives',
-                    'accuracy_f')
+                    )
     list_display_links = ('id',)
+
+    ordering = ('time_took', '-_accuracy', '_total_samples_count')
 
     search_fields = ['id', 'state']
 
-    readonly_fields = ('id', 'creation_timestamp',
+    readonly_fields = ('id',
+                       'creation_timestamp',
                        'P',
                        'N',
                        'sensitivity',
@@ -31,7 +37,9 @@ class PeopleDetectorTestAdmin(admin.ModelAdmin):
                        'false_discovery_rate',
                        'miss_rate',
                        'accuracy',
-                       'balanced_accuracy',)
+                       'balanced_accuracy',
+                       'avg_time_per_sample',
+                       'total_samples_count')
 
     fieldsets = (
         (None, {
@@ -41,12 +49,14 @@ class PeopleDetectorTestAdmin(admin.ModelAdmin):
                        'settings',
                        'creation_timestamp',
                        'running_timestamp',
-                       'time_took',
+                       ('time_took',
+                        'avg_time_per_sample'),
                        ('positive_samples_dir',
                         'negative_samples_dir'),
                        'save_enhaced_images',
                        ('positive_samples_count',
-                        'negative_samples_count')
+                        'negative_samples_count',
+                        'total_samples_count')
                        )
         }),
         ('TEST Metrics', {
@@ -72,6 +82,7 @@ class PeopleDetectorTestAdmin(admin.ModelAdmin):
     def time_took_f(self, obj):
         return "%.2f secs" % obj.time_took
     time_took_f.short_description = 'Time Took'
+    time_took_f.admin_order_field = 'time_took'
 
     def sensitivity(self, obj):
         return "%.2f" % obj.sensitivity
@@ -108,10 +119,20 @@ class PeopleDetectorTestAdmin(admin.ModelAdmin):
     def accuracy_f(self, obj):
         return self.accuracy(obj)
     accuracy_f.short_description = 'accuracy'
+    accuracy_f.admin_order_field = '_accuracy'
 
     def balanced_accuracy(self, obj):
         return "%.2f" % obj.balanced_accuracy
     balanced_accuracy.short_description = 'balanced accuracy BACC = (TP/P + TN/N)/2'
+
+    def avg_time_per_sample(self, obj):
+        return "%.2f secs (%.2f samples/s)" % (obj.avg_time_per_sample, 1 / obj.avg_time_per_sample)
+    avg_time_per_sample.short_description = 'avg time'
+
+    def total_samples_count(self, obj):
+        return obj.total_samples_count
+    total_samples_count.short_description = 'Total Samples'
+    total_samples_count.admin_order_field = '_total_samples_count'
 
 
 admin.site.register(PeopleDetectorTest, PeopleDetectorTestAdmin)

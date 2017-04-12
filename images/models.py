@@ -8,6 +8,7 @@ from django.db import models
 
 from images.app_settings import (images_settings)
 from images.processors import ImagePreProcessorFactory
+from django.utils.translation.trans_real import accept_language_re
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +54,9 @@ class PeopleDetectorTest(models.Model):
     true_negatives = models.PositiveIntegerField("TN", null=False, blank=False, default=0)
     false_positives = models.PositiveIntegerField("FP", null=False, blank=False, default=0)
     false_negatives = models.PositiveIntegerField("FN", null=False, blank=False, default=0)
+
+    _accuracy = models.FloatField(default=0.0, null=False, blank=False)
+    _total_samples_count = models.PositiveIntegerField(default=0, null=False, blank=False)
 
     def run(self):
         self.state = 'running'
@@ -166,7 +170,11 @@ class PeopleDetectorTest(models.Model):
         """
         accuracy (ACC)
         """
-        return (self.TP + self.TN) / (self.P + self.N)
+        acc = (self.TP + self.TN) / (self.P + self.N)
+        if acc != self._accuracy:
+            self._accuracy = acc
+            self.save()
+        return acc
 
     @property
     def balanced_accuracy(self):
@@ -174,3 +182,15 @@ class PeopleDetectorTest(models.Model):
         balanced accuracy (BACC)
         """
         return (self.TP / self.P + self.TN / self.N) / 2
+
+    @property
+    def total_samples_count(self):
+        total = self.positive_samples_count + self.negative_samples_count
+        if total != self._total_samples_count:
+            self._total_samples_count = total
+            self.save()
+        return total
+
+    @property
+    def avg_time_per_sample(self):
+        return self.time_took / self.total_samples_count
