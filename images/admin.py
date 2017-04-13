@@ -126,7 +126,9 @@ class PeopleDetectorTestAdmin(admin.ModelAdmin):
     balanced_accuracy.short_description = 'balanced accuracy BACC = (TP/P + TN/N)/2'
 
     def avg_time_per_sample(self, obj):
-        return "%.2f secs (%.2f samples/s)" % (obj.avg_time_per_sample, 1 / obj.avg_time_per_sample)
+        if obj.avg_time_per_sample > 0:
+            return "%.2f secs (%.2f samples/s)" % (obj.avg_time_per_sample, 1 / obj.avg_time_per_sample)
+        return "-"
     avg_time_per_sample.short_description = 'avg time'
 
     def total_samples_count(self, obj):

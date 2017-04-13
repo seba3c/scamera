@@ -68,22 +68,22 @@ class PeopleDetectorTest(models.Model):
                                                                    output_path)
 
         for im_path in paths.list_images(self.positive_samples_dir):
-            self.positive_samples_count += 1
             result = img_proc.process(im_path)
             if result.count > 0:
-                self.true_positives += 1
+                self.inc_TP()
             else:
-                self.false_positives += 1
+                self.inc_FP()
             self.time_took += result.time
+            self.inc_PS()
 
         for im_path in paths.list_images(self.negative_samples_dir):
-            self.negative_samples_count += 1
             result = img_proc.process(im_path)
             if result.count <= 0:
-                self.true_negatives += 1
+                self.inc_TN()
             else:
-                self.false_negatives += 1
+                self.inc_FN()
             self.time_took += result.time
+            self.inc_NS()
 
         self.state = 'finished'
         self.save()
@@ -91,6 +91,24 @@ class PeopleDetectorTest(models.Model):
     def fail(self):
         self.state = 'failed'
         self.save()
+
+    def inc_PS(self):
+        self.positive_samples_count += 1
+
+    def inc_NS(self):
+        self.negative_samples_count += 1
+
+    def inc_TP(self):
+        self.true_positives += 1
+
+    def inc_FN(self):
+        self.false_negatives += 1
+
+    def inc_FP(self):
+        self.false_positives += 1
+
+    def inc_TN(self):
+        self.true_negatives += 1
 
     @property
     def TP(self):
@@ -121,35 +139,50 @@ class PeopleDetectorTest(models.Model):
         """
         sensitivity or true positive rate (TPR)
         """
-        return self.TP / self.P
+        try:
+            return self.TP / self.P
+        except ZeroDivisionError:
+            return 0.0
 
     @property
     def specificity(self):
         """
         specificity (SPC) or True Negative Rate
         """
-        return self.TN / self.N
+        try:
+            return self.TN / self.N
+        except ZeroDivisionError:
+            return 0.0
 
     @property
     def precision(self):
         """
         precision or positive predictive value (PPV)
         """
-        return self.TP / (self.TP + self.FP)
+        try:
+            return self.TP / (self.TP + self.FP)
+        except ZeroDivisionError:
+            return 0.0
 
     @property
     def negative_predictive_value(self):
         """
         negative predictive value (NPV)
         """
-        return self.TN / (self.TN + self.FN)
+        try:
+            return self.TN / (self.TN + self.FN)
+        except ZeroDivisionError:
+            return 0.0
 
     @property
     def fall_out(self):
         """
         fall-out or false positive rate (FPR)
         """
-        return self.FP / (self.FP + self.TN)
+        try:
+            return self.FP / (self.FP + self.TN)
+        except ZeroDivisionError:
+            return 0.0
 
     @property
     def false_discovery_rate(self):
@@ -163,14 +196,21 @@ class PeopleDetectorTest(models.Model):
         """
         Miss Rate or False Negative Rate (FNR)
         """
-        return self.FN / (self.FN + self.TP)
+        try:
+            return self.FN / (self.FN + self.TP)
+        except ZeroDivisionError:
+            return 0.0
 
     @property
     def accuracy(self):
         """
         accuracy (ACC)
         """
-        acc = (self.TP + self.TN) / (self.P + self.N)
+        try:
+            acc = (self.TP + self.TN) / (self.P + self.N)
+        except ZeroDivisionError:
+            acc = 0.0
+
         if acc != self._accuracy:
             self._accuracy = acc
             self.save()
@@ -181,7 +221,10 @@ class PeopleDetectorTest(models.Model):
         """
         balanced accuracy (BACC)
         """
-        return (self.TP / self.P + self.TN / self.N) / 2
+        try:
+            return (self.TP / self.P + self.TN / self.N) / 2
+        except ZeroDivisionError:
+            return 0.0
 
     @property
     def total_samples_count(self):
@@ -193,4 +236,7 @@ class PeopleDetectorTest(models.Model):
 
     @property
     def avg_time_per_sample(self):
-        return self.time_took / self.total_samples_count
+        try:
+            return self.time_took / self.total_samples_count
+        except ZeroDivisionError:
+            return 0.0
