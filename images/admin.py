@@ -21,7 +21,7 @@ class PeopleDetectorTestAdmin(admin.ModelAdmin):
                     )
     list_display_links = ('id',)
 
-    ordering = ('time_took', '-_accuracy', '_total_samples_count')
+    ordering = ('-_accuracy', 'time_took', '_total_samples_count')
 
     search_fields = ['id', 'state']
 

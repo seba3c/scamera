@@ -1,5 +1,7 @@
 import logging
 
+from images.app_settings import images_settings
+
 from django.core.management.base import BaseCommand
 from images.models import PeopleDetectorTest
 
@@ -33,7 +35,7 @@ class Command(BaseCommand):
 
         test = PeopleDetectorTest.objects.create(positive_samples_dir=positive_dir_samples,
                                                  negative_samples_dir=negative_dir_samples,
-                                                 save_enhaced_images=True)
+                                                 save_enhaced_images=images_settings.output_enhanced_image)
 
         test.run()
 

@@ -8,7 +8,6 @@ from django.db import models
 
 from images.app_settings import (images_settings)
 from images.processors import ImagePreProcessorFactory
-from django.utils.translation.trans_real import accept_language_re
 
 logger = logging.getLogger(__name__)
 
