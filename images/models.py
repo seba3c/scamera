@@ -57,6 +57,15 @@ class PeopleDetectorTest(models.Model):
     _accuracy = models.FloatField(default=0.0, null=False, blank=False)
     _total_samples_count = models.PositiveIntegerField(default=0, null=False, blank=False)
 
+    @classmethod
+    def get_live_test(cls, test_name=images_settings.live_testname):
+        (obj, created) = cls.objects.get_or_create(title=test_name)
+        if created:
+            obj.state = 'running'
+            obj.running_timestamp = timezone.now()
+            obj.save()
+        return obj
+
     def run(self):
         self.state = 'running'
         self.running_timestamp = timezone.now()

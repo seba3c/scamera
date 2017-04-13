@@ -1,11 +1,14 @@
 import logging
 import telegram
 
-from django.db import models
 from telegram.error import TelegramError
+from notifications.telegram import utils
 
-from notifications.models import NotificationHandler
+from django.db import models
 from django.core.exceptions import PermissionDenied
+
+from images.app_settings import (images_settings)
+from notifications.models import NotificationHandler
 
 
 logger = logging.getLogger(__name__)
@@ -53,6 +56,12 @@ class TelegramBot(models.Model):
     def deactivate(self, nup):
         self.toggle_activate(nup, False)
 
+    def send_notification(self, path=None, obj_count=0):
+        self.telegramnotificationhandler._handle_new_notification(path, obj_count)
+
+    def hide_custom_keyboard(self):
+        self.telegramnotificationhandler._hide_custom_keyboard()
+
 
 class TelegramNotificationHandler(NotificationHandler):
 
@@ -61,7 +70,10 @@ class TelegramNotificationHandler(NotificationHandler):
     def _handle_new_notification(self, path=None, object_count=0):
         logger.debug("New notification received, sending data to telegram subscribers...")
 
-        file = open(path,'rb')
+        if path:
+            file = open(path,'rb')
+        else:
+            file = None
 
         tbot = self._get_telegram_bot()
         file_id = None
@@ -70,15 +82,32 @@ class TelegramNotificationHandler(NotificationHandler):
             try:
                 logger.debug("Sending telegram message...")
                 self._send_message(tbot, s.telegram_bot_id, object_count)
-                if file_id:
-                    logger.debug("Sending telegram photo (existing server photo)...")
-                    tbot.sendPhoto(chat_id=s.telegram_bot_id, photo=file_id)
-                elif file:
-                    logger.debug("Sending telegram photo (new photo)...")
-                    tmsg = tbot.sendPhoto(chat_id=s.telegram_bot_id, photo=file)
-                    file_id = tmsg.photo[0].file_id
+                self._send_photo(tbot, s.telegram_bot_id, file, file_id)
             except TelegramError:
                 logger.error("Message could not be sent to chat id: %s", s.telegram_bot_id)
+
+    def _hide_custom_keyboard(self):
+        tbot = self._get_telegram_bot()
+        for s in self.subscribers.all():
+            utils.hide_custom_keyboard(tbot, s.telegram_bot_id)
+
+    def _send_photo(self, tbot, chat_id, file=None, file_id=None):
+        new_file_id = None
+        if file_id or file:
+            if file_id:
+                logger.debug("Sending telegram photo (existing server photo)...")
+                tbot.sendPhoto(chat_id=chat_id, photo=file_id)
+                new_file_id = file_id
+            else:
+                logger.debug("Sending telegram photo (new photo)...")
+                tmsg = tbot.sendPhoto(chat_id=chat_id, photo=file)
+                new_file_id = tmsg.photo[0].file_id
+
+            if images_settings.enable_telegrambot_live_test:
+                logger.debug("Telegram live test enabled! Sending keyboard to evaluate last notification...")
+                utils.send_live_test_keyboard(tbot, chat_id)
+
+        return new_file_id
 
     def _send_message(self, tbot, chat_id, object_count=0):
         parse_mode = telegram.ParseMode.HTML

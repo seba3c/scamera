@@ -28,7 +28,7 @@ class ImagePreProcessor(object):
     def __init__(self, save_enhaced_imgs=None, ouput_path=None):
         self.save_enhaced_imgs = save_enhaced_imgs or imsettings.output_enhanced_image
         self.ouput_path = ouput_path or imsettings.image_output_path
-        if not os.path.exists(self.ouput_path):
+        if not os.path.exists(self.ouput_path) and self.save_enhaced_imgs:
             logger.debug("Creating path '%s'...", self.ouput_path)
             os.makedirs(self.ouput_path, exist_ok=True)
 
@@ -89,10 +89,10 @@ class HOGPeopleDetectorImagePreProcessor(ImagePreProcessor):
                 cv2.rectangle(image, (xA, yA), (xB, yB),
                               self.rect_line_color,
                               self.rect_line_width)
-
-            filename = os.path.basename(path)
-            new_path = os.path.join(self.ouput_path, filename)
-            cv2.imwrite(new_path, image)
+            if self.save_enhaced_imgs:
+                filename = os.path.basename(path)
+                new_path = os.path.join(self.ouput_path, filename)
+                cv2.imwrite(new_path, image)
 
         return ImagePreProcessorResult(new_path, object_detected_count, elapsed_time)
 

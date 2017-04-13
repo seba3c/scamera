@@ -62,6 +62,14 @@ class PeopleDetectorAlgorithmSettingGroup(dbsettings.Group):
                                                required=True,
                                                default='/tmp/scamera/people_tracking/')
 
+    live_testname = dbsettings.StringValue(help_text='Live testname to update via telegram',
+                                           required=True,
+                                           default='LIVE_TEST')
+
+    enable_telegrambot_live_test = dbsettings.BooleanValue(help_text='Enable live test of telegram bot notifications',
+                                                           required=True,
+                                                           default=False)
+
 
 images_settings = PeopleDetectorAlgorithmSettingGroup('People Detector Algorithm')
 images_settings += HOGPeopleDetectorSettingGroup('HOG People Detector')
