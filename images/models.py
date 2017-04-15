@@ -58,7 +58,7 @@ class PeopleDetectorTest(models.Model):
     _total_samples_count = models.PositiveIntegerField(default=0, null=False, blank=False)
 
     @classmethod
-    def get_live_test(cls, test_name=images_settings.live_testname):
+    def get_test(cls, test_name):
         (obj, created) = cls.objects.get_or_create(title=test_name)
         if created:
             obj.state = 'running'
@@ -248,3 +248,13 @@ class PeopleDetectorTest(models.Model):
             return self.time_took / self.total_samples_count
         except ZeroDivisionError:
             return 0.0
+
+    def register_PS_TP(self):
+        self.inc_PS()
+        self.inc_TP()
+        self.save()
+
+    def register_NS_FP(self):
+        self.inc_NS()
+        self.inc_FP()
+        self.save()

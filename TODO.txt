@@ -1,10 +1,3 @@
-* Migrate app to heroku deploy
-* Delay between files received
-* Clean ftpd directory to avoid file accumulation
-* add API to register new users and subscribe them to the notification handlers
-* add supervisor to start service and app and clean directories
-* Fix static with gunicorn (run static in nginx)
-
-DONE
-* Migrate DB to posgres
-* add supervisor to start service
+* Usar constantes para los callbacks de telegram
+* nombre del live test por telegram bot y no global
+* redefinir status del bot para mostrar estadisticas del test en vivo si esta habilitado

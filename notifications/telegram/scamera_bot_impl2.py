@@ -1,10 +1,13 @@
 import logging
 
+from telegram.ext.commandhandler import CommandHandler
 from telegram.ext.callbackqueryhandler import CallbackQueryHandler
+
+from images.models import PeopleDetectorTest
 
 from notifications.telegram.scamera_bot_base import (SCameraBotTelegramHandlers,
                                                      UnregisterdNotificationUserProfile)
-from images.models import PeopleDetectorTest
+from notifications.telegram.utils import (POS_SAMPLE_TRUE_POS, NEG_SAMPLE_FALSE_POS)
 
 
 logger = logging.getLogger(__name__)
@@ -27,22 +30,18 @@ class SCameraBotTelegramHandlers2(SCameraBotTelegramHandlers):
         try:
             self._check_user_registered(update)
             query = update.callback_query
-            logger.debug("Callback query: %s", query)
-
-            test = PeopleDetectorTest.get_live_test()
-            if query.data == 'ps-tp':
-                test.inc_PS()
-                test.inc_TP()
-                test.save()
-                text = "Selected option: %s" % query.data
-            elif query.data == 'ns-fp':
-                test.inc_NS()
-                test.inc_FP()
-                test.save()
-                text = "Selected option: %s" % query.data
+            if query.data in [POS_SAMPLE_TRUE_POS,
+                              NEG_SAMPLE_FALSE_POS]:
+                test = PeopleDetectorTest.get_test(self.telegrambot.name)
+                if query.data == POS_SAMPLE_TRUE_POS:
+                    test.register_PS_TP()
+                    text = "Image registered as 'Positive Sample - True Positive'"
+                elif query.data == NEG_SAMPLE_FALSE_POS:
+                    test.register_NS_FP()
+                    text = "Image registered as 'Negative Sample - False Positive'"
             else:
                 text = "Invalid callback data!"
-                logger.warning("Invalid callback data!")
+                logger.error("Invalid callback data '%s'!", query)
 
             bot.editMessageText(text=text,
                                 chat_id=query.message.chat_id,
@@ -51,9 +50,23 @@ class SCameraBotTelegramHandlers2(SCameraBotTelegramHandlers):
             self._handle_user_unregistered(bot, update)
         logger.info("Callback handled!")
 
+    def status(self, bot, update):
+        super(SCameraBotTelegramHandlers2, self).status(bot, update)
+        tbot = self.telegrambot
+        if tbot.debug:
+            test = PeopleDetectorTest.get_test(self.telegrambot.name)
+            msg = "Live Test enabled\n"
+            msg += "Accuracy: %.2f\n" % test.accuracy
+            msg += "Total positive samples: %d\n" % test.positive_samples_count
+            msg += "Total negative samples: %d\n" % test.negative_samples_count
+            msg += "True positives (TP): %d\n" % test.TP
+            msg += "False positives (FP): %d\n" % test.FP
+            self._send_message(bot, update, msg)
+
     def _build_updater(self):
         updater = super(SCameraBotTelegramHandlers2, self)._build_updater()
         updater.dispatcher.add_handler(CallbackQueryHandler(self.handle_callback))
+        updater.dispatcher.add_handler(CommandHandler('status', self.status))
         return updater
 
 

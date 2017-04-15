@@ -95,7 +95,7 @@ class SCameraBotTelegramHandlers():
             self._send_message(bot, update, msg)
         except UnregisterdNotificationUserProfile:
             self._handle_user_unregistered(bot, update)
-        except:
+        except Exception:
             logger.exception()
         logger.info("Status check OK!")
 
@@ -119,7 +119,7 @@ class SCameraBotTelegramHandlers():
             self._send_message(bot, update, msg)
         except UnregisterdNotificationUserProfile:
             self._handle_user_unregistered(bot, update)
-        except:
+        except Exception:
             logger.exception()
         logger.info("Subscription disabled!")
 
@@ -139,7 +139,7 @@ class SCameraBotTelegramHandlers():
             self._handle_user_unregistered(bot, update)
         except PermissionDenied:
             self._handle_user_not_superuser(bot, update)
-        except:
+        except Exception:
             logger.exception()
 
     def deactivate(self, bot, update):
@@ -154,7 +154,7 @@ class SCameraBotTelegramHandlers():
             self._handle_user_unregistered(bot, update)
         except PermissionDenied:
             self._handle_user_not_superuser(bot, update)
-        except:
+        except Exception:
             logger.exception()
 
     def _build_updater(self):

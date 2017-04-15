@@ -7,7 +7,6 @@ from notifications.telegram import utils
 from django.db import models
 from django.core.exceptions import PermissionDenied
 
-from images.app_settings import (images_settings)
 from notifications.models import NotificationHandler
 
 
@@ -21,6 +20,10 @@ class TelegramBot(models.Model):
     token = models.CharField(max_length=100, null=False, unique=True)
 
     module_name = models.CharField(max_length=25, null=True)
+
+    debug = models.BooleanField("Debug enabled",
+                                help_text="Enable online evaluation of each image received",
+                                default=False, null=False, blank=False)
 
     def __str__(self):
         return "@%s" % self.name
@@ -103,7 +106,7 @@ class TelegramNotificationHandler(NotificationHandler):
                 tmsg = tbot.sendPhoto(chat_id=chat_id, photo=file)
                 new_file_id = tmsg.photo[0].file_id
 
-            if images_settings.enable_telegrambot_live_test:
+            if self.telegram_bot.debug:
                 logger.debug("Telegram live test enabled! Sending keyboard to evaluate last notification...")
                 utils.send_live_test_keyboard(tbot, chat_id)
 
