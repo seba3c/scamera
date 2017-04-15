@@ -50,6 +50,9 @@ class NotificationFTPHandler(FTPHandler):
         logger.debug("Initializing FTP Notification handler...")
         super(NotificationFTPHandler, self).__init__(conn, server, ioloop)
 
+    def get_ftp_user(self):
+        return FTPUser.objects.get(user__username=self.username)
+
     def on_connect(self):
         logger.debug("%s:%s connected", self.remote_ip, self.remote_port)
 
@@ -64,21 +67,28 @@ class NotificationFTPHandler(FTPHandler):
 
     def on_file_received(self, file):
         logger.info("File received %s", file)
-        self._send_notifications(file)
+        result = self._pre_process(file)
+        self._send_notifications(result)
 
     def on_incomplete_file_received(self, file):
         logger.info("Incomplete file received %s", file)
-        self._send_notifications(file)
+        result = self._pre_process(file)
+        self._send_notifications(result)
 
-    def _send_notifications(self, file):
+    def _send_notifications(self, result):
         logger.info("Firing notification...")
-        ftp_user = FTPUser.objects.get(user__username=self.username)
+        ftp_user = self.get_ftp_user()
         handlers = ftp_user.get_active_notification_handlers()
-        data = open(file, 'rb')
-        kwarg = {'file': data}
+        kwarg = {'path': result.path, 'object_count': result.count}
         # TODO: send in a thread or task
         for hdl in handlers:
             hdl.new_notification(kwarg)
+
+    def _pre_process(self, file):
+        ftp_user = self.get_ftp_user()
+        image_preprocessor = ftp_user.get_image_preprocessor()
+        result = image_preprocessor.process(file)
+        return result
 
 
 class NotificationFTPServer():

@@ -1,5 +1,6 @@
 import os
 
+
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # /tero/app
@@ -22,7 +23,8 @@ ALLOWED_HOSTS = []
 # Application definition
 INSTALLED_APPS = [
     'ftpd',
-    'notifications'
+    'notifications',
+    'images'
 ]
 
 INSTALLED_APPS += [
@@ -35,6 +37,7 @@ INSTALLED_APPS += [
     'rest_framework',
     'django_extensions',
     'solo',
+    'dbsettings',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -126,3 +129,5 @@ FTPD_HOST = ''
 FTPD_PORT = 0
 
 LOGGING_DEFAULT_LEVEL = 'ERROR'
+
+DBSETTINGS_USE_SITES = False

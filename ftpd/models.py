@@ -4,6 +4,8 @@ from django.db import models
 from django.utils.text import slugify
 from django.contrib.auth.models import User
 
+from images.processors import ImagePreProcessorFactory
+
 logger = logging.getLogger(__name__)
 
 
@@ -65,6 +67,9 @@ class FTPUser(models.Model):
     def get_notification_handlers_count(self):
         count = self.telegramnotificationhandler_set.count()
         return count
+
+    def get_image_preprocessor(self):
+        return ImagePreProcessorFactory.get_image_preprocessor()
 
     def __str__(self):
         return "%s - %s (Notification Handlers: %d)" % (self.user,

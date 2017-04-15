@@ -3,7 +3,7 @@ import dj_database_url
 
 from settings.base_settings import *
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -91,6 +91,11 @@ LOGGING = {
             'propagate': False,
         },
         'notifications': {
+            'handlers': LOGGING_DEFAULT_HANDLERS,
+            'level': LOGGING_DEFAULT_LEVEL,
+            'propagate': False,
+        },
+        'images': {
             'handlers': LOGGING_DEFAULT_HANDLERS,
             'level': LOGGING_DEFAULT_LEVEL,
             'propagate': False,
