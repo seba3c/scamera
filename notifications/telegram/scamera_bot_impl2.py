@@ -46,16 +46,20 @@ class SCameraBotTelegramHandlers2(SCameraBotTelegramHandlers):
             bot.editMessageText(text=text,
                                 chat_id=query.message.chat_id,
                                 message_id=query.message.message_id)
+            self.test_stats(bot, update)
         except UnregisterdNotificationUserProfile:
             self._handle_user_unregistered(bot, update)
         logger.info("Callback handled!")
 
     def status(self, bot, update):
         super(SCameraBotTelegramHandlers2, self).status(bot, update)
+        self.test_stats(bot, update)
+
+    def test_stats(self, bot, update):
         tbot = self.telegrambot
         if tbot.debug:
             test = PeopleDetectorTest.get_test(self.telegrambot.name)
-            msg = "Live Test enabled\n"
+            msg = "Live test enabled\n"
             msg += "Accuracy: %.2f\n" % test.accuracy
             msg += "Total positive samples: %d\n" % test.positive_samples_count
             msg += "Total negative samples: %d\n" % test.negative_samples_count

@@ -18,9 +18,9 @@ class HOGPeopleDetectorSettingGroup(dbsettings.Group):
                                   )
 
     padding_x = dbsettings.PositiveIntegerValue(help_text='the number of pixels in X direction in which the sliding window ROI is “padded” prior to HOG feature extraction',
-                                                required=True, default=8)
+                                                required=True, default=4)
     padding_y = dbsettings.PositiveIntegerValue(help_text='the number of pixels in Y direction in which the sliding window ROI is “padded” prior to HOG feature extraction',
-                                                required=True, default=8)
+                                                required=True, default=4)
 
     non_maxima_suppression_thresh = dbsettings.FloatValue(description='Non maxima suppression threshold',
                                                           help_text='suppress bounding boxes that overlap with a specified threshold',

@@ -35,20 +35,25 @@ class SCameraBotTelegramHandlers():
 
     def _send_message(self, bot, update, msg):
         try:
-            chat_id = update.message.chat_id
+            chat_id = self._get_chat_id(update)
             logger.debug("chat_id: %s", chat_id)
             bot.sendMessage(chat_id=chat_id, text=msg)
         except TelegramError:
             logger.error("Error sending message! chat_id: %s")
 
-    def _check_user_registered(self, update):
-        logger.debug("Verifying user registered...")
+    def _get_chat_id(self, update):
         if update.message:
             chat_id = update.message.chat_id
         elif update.callback_query:
             chat_id = update.callback_query.message.chat_id
         else:
-            chat_id = -1
+            chat_id = None
+        return chat_id
+
+    def _check_user_registered(self, update):
+        logger.debug("Verifying user registered...")
+
+        chat_id = self._get_chat_id(update)
 
         try:
             nup = NotificationUserProfile.objects.get(telegram_bot_id=chat_id)
@@ -82,7 +87,7 @@ class SCameraBotTelegramHandlers():
         logger.info("Checking status...")
         try:
             nup = self._check_user_registered(update)
-            chat_id = update.message.chat_id
+            chat_id = self._get_chat_id(update)
             username = update.message.chat.username
             logger.info("Checking subscription...")
             subscribed = 'on' if self.telegrambot.is_subscribed(nup) else 'off'
