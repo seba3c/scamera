@@ -7,7 +7,11 @@ from images.models import PeopleDetectorTest
 
 from notifications.telegram.scamera_bot_base import (SCameraBotTelegramHandlers,
                                                      UnregisterdNotificationUserProfile)
-from notifications.telegram.utils import (POS_SAMPLE_TRUE_POS, NEG_SAMPLE_FALSE_POS)
+from notifications.telegram.utils import (POS_SAMPLE_TRUE_POS,
+                                          NEG_SAMPLE_FALSE_POS,
+                                          POS_SAMPLE_FALSE_NEG,
+                                          NEG_SAMPLE_TRUE_NEG,
+                                          DISCARD_SAMPLE)
 
 
 logger = logging.getLogger(__name__)
@@ -31,14 +35,25 @@ class SCameraBotTelegramHandlers2(SCameraBotTelegramHandlers):
             self._check_user_registered(update)
             query = update.callback_query
             if query.data in [POS_SAMPLE_TRUE_POS,
-                              NEG_SAMPLE_FALSE_POS]:
+                              NEG_SAMPLE_FALSE_POS,
+                              POS_SAMPLE_FALSE_NEG,
+                              NEG_SAMPLE_TRUE_NEG,
+                              DISCARD_SAMPLE]:
                 test = PeopleDetectorTest.get_test(self.telegrambot.name)
                 if query.data == POS_SAMPLE_TRUE_POS:
                     test.register_PS_TP()
-                    text = "Image registered as 'Positive Sample - True Positive'"
+                    text = "Image sample registered as 'Positive Sample - True Positive'"
                 elif query.data == NEG_SAMPLE_FALSE_POS:
                     test.register_NS_FP()
-                    text = "Image registered as 'Negative Sample - False Positive'"
+                    text = "Image sample registered as 'Negative Sample - False Positive'"
+                elif query.data == POS_SAMPLE_FALSE_NEG:
+                    test.register_PS_FN()
+                    text = "Image sample registered as 'Positive Sample - False Negative'"
+                elif query.data == NEG_SAMPLE_TRUE_NEG:
+                    test.register_NS_TN()
+                    text = "Image sample registered as 'Negative Sample - True Negative'"
+                else:
+                    text = "Image sample 'discarded'"
             else:
                 text = "Invalid callback data!"
                 logger.error("Invalid callback data '%s'!", query)
@@ -65,6 +80,8 @@ class SCameraBotTelegramHandlers2(SCameraBotTelegramHandlers):
             msg += "Total negative samples: %d\n" % test.negative_samples_count
             msg += "True positives (TP): %d\n" % test.TP
             msg += "False positives (FP): %d\n" % test.FP
+            msg += "True negatives (TN): %d\n" % test.TN
+            msg += "False negatives (FN): %d\n" % test.FN
             self._send_message(bot, update, msg)
 
     def _build_updater(self):

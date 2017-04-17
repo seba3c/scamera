@@ -15,11 +15,18 @@ logger = logging.getLogger(__name__)
 
 class TelegramBot(models.Model):
 
+    TELEGRAM_BOT_IMPL_CHOICES = (('scamera_bot_impl1', 'Impl. v1.0'),
+                                 ('scamera_bot_impl2', 'Impl. v2.0'))
+
     name = models.CharField(max_length=25, null=False, primary_key=True)
     # allows more than one telegram bot implementation with the same token
     token = models.CharField(max_length=100, null=False, unique=True)
 
-    module_name = models.CharField(max_length=25, null=True)
+    module_name = models.CharField("Bot implementation",
+                                   help_text="Handler module (telegram bot API implementation)",
+                                   max_length=25, null=False,
+                                   default='scamera_bot_impl1',
+                                   choices=TELEGRAM_BOT_IMPL_CHOICES)
 
     debug = models.BooleanField("Debug enabled",
                                 help_text="Enable online evaluation of each image received",

@@ -40,8 +40,8 @@ class PeopleDetectorTest(models.Model):
                                              null=True, blank=False)
     time_took = models.FloatField(default=0.0, null=False, blank=True)
 
-    positive_samples_dir = models.CharField(max_length=150, null=False, blank=False)
-    negative_samples_dir = models.CharField(max_length=150, null=False, blank=False)
+    positive_samples_dir = models.CharField(max_length=150, null=True, blank=True)
+    negative_samples_dir = models.CharField(max_length=150, null=True, blank=True)
     save_enhaced_images = models.BooleanField(default=False, null=False, blank=False)
 
     positive_samples_count = models.PositiveIntegerField("Positive Samples",
@@ -59,9 +59,8 @@ class PeopleDetectorTest(models.Model):
 
     @classmethod
     def get_test(cls, test_name):
-        (obj, created) = cls.objects.get_or_create(title=test_name)
+        (obj, created) = cls.objects.get_or_create(title=test_name, state='running')
         if created:
-            obj.state = 'running'
             obj.running_timestamp = timezone.now()
             obj.save()
         return obj
@@ -93,6 +92,9 @@ class PeopleDetectorTest(models.Model):
             self.time_took += result.time
             self.inc_NS()
 
+        self.finish()
+
+    def finish(self):
         self.state = 'finished'
         self.save()
 
@@ -257,4 +259,14 @@ class PeopleDetectorTest(models.Model):
     def register_NS_FP(self):
         self.inc_NS()
         self.inc_FP()
+        self.save()
+
+    def register_PS_FN(self):
+        self.inc_PS()
+        self.inc_FN()
+        self.save()
+
+    def register_NS_TN(self):
+        self.inc_NS()
+        self.inc_TN()
         self.save()
