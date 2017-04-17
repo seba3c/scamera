@@ -2,7 +2,7 @@
 
 source config_enviroment
 
-NAME="tero_app"                                 # Name of the application
+NAME="scamera_bot"                              # Name of the application
 
 SOCKFILE=$CWD/run/gunicorn.sock  				# we will communicate using this unix socket
 NUM_WORKERS=1                                   # how many worker processes should Gunicorn spawn

@@ -2,7 +2,7 @@
 
 source config_enviroment
 
-NEG_SAMPLES_DIR=/home/seba/dev/work/scamera-dataset/large/negatives 
-POS_SAMPLES_DIR=/home/seba/dev/work/scamera-dataset/large/positives
+NEG_SAMPLES_DIR=/home/seba/dev/work/scamera-dataset/small/negatives 
+POS_SAMPLES_DIR=/home/seba/dev/work/scamera-dataset/small/positives
 
 exec python manage.py run_people_detector_test $NEG_SAMPLES_DIR $POS_SAMPLES_DIR

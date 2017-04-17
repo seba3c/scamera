@@ -20,6 +20,7 @@ class TelegramBotRunner():
             telegram_bot_module = importlib.import_module(telegram_bot_module_name)
             updater = telegram_bot_module.get_telegram_updater(telegram_bot)
             logger.debug("Running telegram bot...")
+            logger.debug("Module implementation: '%s'", telegram_bot_module_name)
             updater.start_polling()
             logger.debug("Telegram bot %s running...", telegram_bot)
             updater.idle()
@@ -27,5 +28,5 @@ class TelegramBotRunner():
             logger.error("Telegram bot %s not implemented!", telegram_bot)
         except TelegramBot.DoesNotExist:
             logger.error("Telegram bot %s not registered!", botname)
-        except:
-            logger.exception("Error trying to run telegram bot %s!")
+        except Exception:
+            logger.exception("Error trying to run telegram bot %s!", botname)
