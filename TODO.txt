@@ -1,3 +1,0 @@
-* Usar constantes para los callbacks de telegram
-* nombre del live test por telegram bot y no global
-* redefinir status del bot para mostrar estadisticas del test en vivo si esta habilitado
