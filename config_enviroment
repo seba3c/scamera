@@ -3,7 +3,7 @@
 CWD=$(pwd)
 DJANGODIR=$CWD
 DJANGO_SETTINGS_MODULE=settings.prod_settings    # which settings file should Django use
-VENV=~/virtualenvs/scamera/bin/
+VENV=~/virtualenvs/scamera-v2/bin/
 
 echo "Starting $NAME as `whoami`"
 
