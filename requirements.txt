@@ -13,4 +13,5 @@ pygame==1.9.2
 PyOpenGL==3.1.0
 django-dbsettings==0.10.0
 imutils==0.3.10
-# opencv-python==3.2.0.7 alternative to install opencv from source code
+# alternative to install opencv from source code
+opencv-python==3.2.0.7
