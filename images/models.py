@@ -48,6 +48,8 @@ class PeopleDetectorTest(models.Model):
                                                          null=False, blank=False, default=0)
     negative_samples_count = models.PositiveIntegerField("Negative Samples",
                                                          null=False, blank=False, default=0)
+    discarded_samples_count = models.PositiveIntegerField("Discarded Samples",
+                                                          null=False, blank=False, default=0)
 
     true_positives = models.PositiveIntegerField("TP", null=False, blank=False, default=0)
     true_negatives = models.PositiveIntegerField("TN", null=False, blank=False, default=0)
@@ -107,6 +109,9 @@ class PeopleDetectorTest(models.Model):
 
     def inc_NS(self):
         self.negative_samples_count += 1
+
+    def inc_DIS(self):
+        self.discarded_samples_count += 1
 
     def inc_TP(self):
         self.true_positives += 1
@@ -238,7 +243,7 @@ class PeopleDetectorTest(models.Model):
 
     @property
     def total_samples_count(self):
-        total = self.positive_samples_count + self.negative_samples_count
+        total = self.positive_samples_count + self.negative_samples_count + self.discarded_samples_count
         if total != self._total_samples_count:
             self._total_samples_count = total
             self.save()
@@ -269,4 +274,8 @@ class PeopleDetectorTest(models.Model):
     def register_NS_TN(self):
         self.inc_NS()
         self.inc_TN()
+        self.save()
+
+    def register_DIS(self):
+        self.inc_DIS()
         self.save()

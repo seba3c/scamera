@@ -13,6 +13,7 @@ class PeopleDetectorTestAdmin(admin.ModelAdmin):
                     'avg_time_per_sample',
                     'positive_samples_count',
                     'negative_samples_count',
+                    'discarded_samples_count',
                     'total_samples_count',
                     'true_positives',
                     'false_positives',
@@ -56,6 +57,7 @@ class PeopleDetectorTestAdmin(admin.ModelAdmin):
                        'save_enhaced_images',
                        ('positive_samples_count',
                         'negative_samples_count',
+                        'discarded_samples_count',
                         'total_samples_count')
                        )
         }),

@@ -54,6 +54,7 @@ class SCameraBotTelegramHandlers2(SCameraBotTelegramHandlers):
                     text = "Image sample registered as 'Negative Sample - True Negative'"
                 else:
                     text = "Image sample 'discarded'"
+                    test.register_DIS()
             else:
                 text = "Invalid callback data!"
                 logger.error("Invalid callback data '%s'!", query)
@@ -78,6 +79,7 @@ class SCameraBotTelegramHandlers2(SCameraBotTelegramHandlers):
             msg += "Accuracy: %.2f\n" % test.accuracy
             msg += "Total positive samples: %d\n" % test.positive_samples_count
             msg += "Total negative samples: %d\n" % test.negative_samples_count
+            msg += "Total discarded samples: %d\n" % test.discarded_samples_count
             msg += "True positives (TP): %d\n" % test.TP
             msg += "False positives (FP): %d\n" % test.FP
             msg += "True negatives (TN): %d\n" % test.TN
