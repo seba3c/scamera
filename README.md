@@ -1,9 +1,13 @@
 # scamera
 
+This is a branch of the initial work in [Tero](https://github.com/teritos/tero-saas). The goal in this implementation was to test the HOG People Detector provided by [OpenCV library](https://opencv.org/)
+
+## Screenshot
+
 Telegram Bot receiving an Alert from a connected security camera (TPLINK-nc220)
 
-![Telegram Bot receiving an alert](https://github.com/seba3c/scamera/blob/master/examples/TelegramBot-HOG-detector.png)
+<img src="examples/TelegramBot-HOG-detector.png" width="200">
 
-Background Sustraction using OpenCV
 
-![Background Sustraction using OPENCV](https://github.com/seba3c/scamera/blob/master/examples/OpenCV-background-sustraction.png)
+
+
